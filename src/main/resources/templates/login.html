@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+</head>
+<body>
+    <div class="loginContainer">
+        <div class="formSection">
+            <button class="closeButton" onclick="window.history.back()">
+                &#x2715; <!-- Close Icon (alternative to MdClose) -->
+            </button>
+            <p class="welcomeText">WELCOME BACK</p>
+            <h1>Sign in</h1>
+            <form action="#" th:action="@{/login}" method="post">
+                <!-- Username Field -->
+                <div class="formGroup">
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        required
+                        placeholder=" "
+                        aria-label="Username"
+                    />
+                    <label for="username">Username</label>
+                </div>
+
+                <!-- Password Field -->
+                <div class="passwordFieldWrapper">
+                    <div class="formGroup">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            required
+                            placeholder=" "
+                            aria-label="Password"
+                        />
+                        <label for="password">Password</label>
+                    </div>
+                    <button type="button" class="passwordToggleBtn" onclick="togglePasswordVisibility()">
+                        <span id="toggleIcon">👁️</span>
+                    </button>
+                </div>
+
+                <button type="submit" class="btnRegister">
+                    Sign in
+                </button>
+            </form>
+            <p class="signupText">Don't have an account? <a th:href="@{/signup}">Sign Up</a></p>
+        </div>
+    </div>
+
+    <script>
+        let isPasswordVisible = false;
+
+        // Function to toggle password visibility
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById("password");
+            const toggleIcon = document.getElementById("toggleIcon");
+            isPasswordVisible = !isPasswordVisible;
+            passwordInput.type = isPasswordVisible ? "text" : "password";
+            toggleIcon.textContent = isPasswordVisible ? "🙈" : "👁️"; // Update icon
+        }
+    </script>
+</body>
+</html>

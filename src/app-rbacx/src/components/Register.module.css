@@ -1,0 +1,162 @@
+:root {
+  --background-color: #3e3e3e;
+  --dark-background: #0f0909;
+  --accent-color: #f97316;
+  --hover-accent-color: #ff7f26;
+  --success-color: #4caf50;
+  --error-color: #f44336;
+  --text-color: #ffffff;
+  --placeholder-color: #b8b8b8;
+  --light-gray: #b0b0b0;
+}
+
+body {
+  background-color: var(--background-color);
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+.registerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background-color: var(--dark-background);
+  border-radius: 15px;
+  padding: 40px;
+  max-width: 1000px;
+  margin: 50px auto;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.formSection {
+  color: var(--text-color);
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.formSection a {
+  text-decoration: none;
+  color: var(--accent-color);
+}
+
+.formSection a:hover {
+  text-decoration: underline;
+}
+
+.formSection h1 {
+  font-size: 32px;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.formSection p {
+  font-size: 16px;
+  margin-bottom: 30px;
+  color: var(--light-gray);
+}
+
+.formRow {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.formGroup {
+  position: relative;
+  flex: 1;
+  margin-right: 10px;
+}
+
+.formGroup:last-child {
+  margin-right: 0;
+}
+
+.formGroup label {
+  position: absolute;
+  pointer-events: none;
+  transform: translate(10px, 21px) scale(1);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+  color: var(--text-color);
+  font-size: 16px;
+  line-height: 1;
+  left: 16px;
+}
+
+.formGroup input {
+  margin-bottom: 10px;
+  width: 100%;
+  padding: 25px 23px 10px;
+  border-radius: 25px;
+  background-color: var(--background-color);
+  border: none;
+  color: var(--text-color);
+  font-size: 16px;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.formGroup input:not(:placeholder-shown) + label,
+.formGroup input:focus + label {
+  transform: translate(-1px, 10px) scale(0.8);
+  color: var(--placeholder-color);
+}
+
+.formGroup input::placeholder {
+  color: transparent;
+}
+
+.formGroup input:focus {
+  border: 2px solid var(--accent-color);
+}
+
+.btnRegister {
+  background-color: var(--accent-color);
+  color: var(--text-color);
+  padding: 15px 20px;
+  border-radius: 25px;
+  font-size: 18px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+}
+
+.btnRegister:hover {
+  background-color: var(--hover-accent-color);
+}
+
+.btnRegister:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.imageSection {
+  width: 450px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-left: 20px;
+}
+
+.imageSection img {
+  width: 100%;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  .registerContainer {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .imageSection {
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  .formSection {
+    width: 100%;
+  }
+}

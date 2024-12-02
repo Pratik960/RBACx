@@ -121,19 +121,4 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                 .anyMatch(p -> pathMatcher.match(p, request.getServletPath()));
     }
 
-    private Map<String, String> getParameterValues(String queryString) {
-
-        // Parse the original query string into a map of parameters and their values
-        Map<String, String> parameters = new LinkedHashMap<>();
-        if (queryString != null) {
-            String[] queryParams = queryString.split("&");
-            for (String queryParam : queryParams) {
-                String[] keyValue = queryParam.split("=");
-                if (keyValue.length == 2) {
-                    parameters.put(keyValue[0], keyValue[1]);
-                }
-            }
-        }
-        return parameters;
-    }
 }

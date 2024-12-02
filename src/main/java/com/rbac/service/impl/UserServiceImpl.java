@@ -85,8 +85,6 @@ public class UserServiceImpl implements UserService {
 
     public static void main(String[] args) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String encode = encoder.encode("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");
-        System.out.println("encrypted password : " + encode);
     }
 
     /**

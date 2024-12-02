@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.rbac.model.dto.user.UserAuthenticateRequest;
 import com.rbac.model.dto.user.UserRequest;
 import com.rbac.model.dto.user.UserResponse;
+import com.rbac.model.dto.user.Auth.LoginResponse;
 import com.rbac.service.UserService;
 import com.rbac.util.AppUtil;
 import com.rbac.util.http.exceptions.CustomException;
@@ -86,8 +87,8 @@ public class AuthController {
         @ApiResponse(responseCode = "200", description = "successful operation")
     })
     @PostMapping("/authenticate")
-    public ResponseEntity<SuccessResponse<String>> loginUser(@RequestBody UserAuthenticateRequest userRequest, HttpServletRequest request) {
-        SuccessResponse<String> response = userService.authenticateUser(userRequest, request);
+    public ResponseEntity<SuccessResponse<LoginResponse>> loginUser(@RequestBody UserAuthenticateRequest userRequest, HttpServletRequest request) {
+        SuccessResponse<LoginResponse> response = userService.authenticateUser(userRequest, request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

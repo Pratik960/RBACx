@@ -7,6 +7,7 @@ import com.rbac.model.dto.user.UserAuthenticateRequest;
 import com.rbac.model.dto.user.UserRequest;
 import com.rbac.model.dto.user.UserResponse;
 import com.rbac.model.dto.user.UserUpdateRequest;
+import com.rbac.model.dto.user.Auth.LoginResponse;
 import com.rbac.util.http.response.SuccessResponse;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +22,7 @@ public interface UserService {
 
     SuccessResponse<UserResponse> updateUser(UserUpdateRequest updateRequest);
 
-    SuccessResponse<String> authenticateUser(UserAuthenticateRequest userRequest, HttpServletRequest request);
+    SuccessResponse<LoginResponse> authenticateUser(UserAuthenticateRequest userRequest, HttpServletRequest request);
 
     String activateAccount(Map<String, String> params);
 

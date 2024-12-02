@@ -30,6 +30,7 @@ import com.rbac.model.dto.user.UserAuthenticateRequest;
 import com.rbac.model.dto.user.UserRequest;
 import com.rbac.model.dto.user.UserResponse;
 import com.rbac.model.dto.user.UserUpdateRequest;
+import com.rbac.model.dto.user.Auth.LoginResponse;
 import com.rbac.model.entity.Users;
 import com.rbac.model.entity.Users.UserStatus;
 import com.rbac.service.UserService;
@@ -202,7 +203,7 @@ public class UserServiceImpl implements UserService {
      *                               user
      */
     @Override
-    public SuccessResponse<String> authenticateUser(UserAuthenticateRequest userRequest, HttpServletRequest request) {
+    public SuccessResponse<LoginResponse> authenticateUser(UserAuthenticateRequest userRequest, HttpServletRequest request) {
 
         String authToken;
         try {
@@ -224,7 +225,10 @@ public class UserServiceImpl implements UserService {
 
             authToken = jwtUtil.createToken(claims, String.valueOf(users.getId()), "rbac", username);
 
-            return new SuccessResponse<>(authToken, HttpStatus.OK.value());
+            LoginResponse response = new LoginResponse();
+            response.setToken(authToken);
+            response.setUserRole(users.getAuthorities().name());
+            return new SuccessResponse<>(response, HttpStatus.OK.value());
         } catch (UnauthorizedException ex) {
             throw new CustomException(ex.getMessage(), ex);
         } catch (Exception e) {

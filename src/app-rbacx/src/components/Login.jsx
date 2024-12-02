@@ -35,6 +35,12 @@ const Login = () => {
         try {
             const response = await axios.post("http://localhost:5001/api/auth/authenticate", trimmedData);
             console.log(response);
+            const { token, userRole } = response.data.data;
+            if (token && userRole) {
+                localStorage.setItem("authToken", token);
+                localStorage.setItem("userRole", userRole);
+                navigate("/userdashboard"); 
+            }
         } catch (error) {
             const errorMessages = error?.response?.data?.errors || ["Login failed. Please try again."];
             errorMessages.forEach((msg) => toast.error(msg));

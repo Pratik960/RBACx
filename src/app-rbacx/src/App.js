@@ -1,7 +1,9 @@
-import React from 'react';
+import React from "react";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import ErrorPage from "./components/ErrorPage";
+import UserDashboard from "./components/UserDashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
 import { Toaster } from "react-hot-toast";
 import { Routes, Route } from "react-router-dom";
 function App() {
@@ -13,7 +15,7 @@ function App() {
         toastOptions={{
           duration: 4000,
           style: {
-            width: '500px',
+            width: "500px",
             animation: "slide-in-right 0.5s ease-out",
           },
           success: {
@@ -27,19 +29,27 @@ function App() {
               primary: "red",
               secondary: "white",
             },
-          }
+          },
         }}
       />
 
       <>
-
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/signup" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route
+            path="/userdashboard"
+            element={
+              <ProtectedRoute
+                element={<UserDashboard />}
+                requiredRole={"ROLE_USER"}
+              />
+            }
+          />
           <Route path="*" element={<ErrorPage />} />
+          <Route path="/error" element={<ErrorPage />} />
         </Routes>
-      
       </>
     </div>
   );

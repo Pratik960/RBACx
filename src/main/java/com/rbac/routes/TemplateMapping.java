@@ -23,11 +23,6 @@ public class TemplateMapping {
         return "index";
     }
     
-    @RequestMapping("/app/**")
-    public String appPath() {
-        return "index";
-    }
-
     @GetMapping(value = {"/", "/{x:[\\w\\-]+}"})
     public String index() {
         return "index.html";

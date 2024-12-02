@@ -36,7 +36,7 @@ const returnAll = (watchFile) => {
               loader: "css-loader", // Handles the CSS imports and URL resolution
               options: {
                 modules: {
-                  localIdentName: "[path][name]__[local]--[hash:base64:5]", // Optional: Customize class name format
+                  localIdentName: "[path][name]__[local]--[hash:base64:5]",
                 },
               },
             },

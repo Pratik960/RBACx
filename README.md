@@ -41,7 +41,7 @@ spring.datasource.password=your_password
 Navigate to cloned repository
 
 ```bash
-  cd rbacx
+   cd VRV-Security-Backend-Assignment-RBACx
   mvn clean install
   mvn spring-boot:run
 ```

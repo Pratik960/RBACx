@@ -1,11 +1,11 @@
-## Role Based Access Control System (RBACx)
+# Role Based Access Control System (RBACx)
 
 RBACx is a secure Role-Based Access Control (RBAC) system built with React, Spring Boot, Spring Security, JWT tokens, MySQL, Webpack, and Swagger. The system implements authentication, authorization, and role-based access for different user types with varying permissions.
 
 This project is aimed at demonstrating the principles of Authentication, Authorization, and Role-Based Access Control (RBAC) by allowing users to register, log in, and access resources based on their assigned roles.
 
 
-### User Roles and Permissions
+## User Roles and Permissions
 
 | **Role**       | **Permissions**                                                                                                                                                                                                                                                                                                  |
 |----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -58,7 +58,7 @@ Navigate to cloned repository
   http://localhost:5001/swagger-ui/index.html#/
 ```
 
-# Screenshots
+## Screenshots
 
 ### Registration Page
 

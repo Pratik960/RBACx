@@ -21,7 +21,7 @@ This project is aimed at demonstrating the principles of Authentication, Authori
 Clone the repository to your local machine:
 
 ```bash
-  git clone https://github.com/Pratik960/RBACx.git
+  git clone https://github.com/Pratik960/VRV-Security-Backend-Assignment-RBACx.git
 ```
 
 ### 2. Database Setup (MySQL)

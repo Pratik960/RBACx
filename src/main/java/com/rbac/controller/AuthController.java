@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.rbac.model.dto.auth.LoginResponse;
 import com.rbac.model.dto.user.UserAuthenticateRequest;
 import com.rbac.model.dto.user.UserRequest;
 import com.rbac.model.dto.user.UserResponse;
-import com.rbac.model.dto.user.Auth.LoginResponse;
 import com.rbac.service.UserService;
 import com.rbac.util.AppUtil;
 import com.rbac.util.http.exceptions.CustomException;

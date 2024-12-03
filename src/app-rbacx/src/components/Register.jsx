@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import * as styles from "./Register.module.css";
 import axios from "axios";
 import toast from "react-hot-toast";
+import registrationImage from "./images/RBACxLogo.png";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -10,7 +12,10 @@ const Register = () => {
     username: "",
     email: "",
     password: "",
+    role: "",
   });
+
+  const navigate = useNavigate();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -19,9 +24,10 @@ const Register = () => {
   };
 
   const validateForm = () => {
-    const { email, password, firstName, lastName } = formData;
+    const { email, password, firstName, lastName, role } = formData;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&^])[A-Za-z\d@.#$!%*?&]{8,15}$/;
+    const passRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&^])[A-Za-z\d@.#$!%*?&]{8,15}$/;
 
     if (firstName.trim().length < 3) {
       toast.error("First name must be more than 3 characters");
@@ -43,6 +49,10 @@ const Register = () => {
       );
       return false;
     }
+    if (!role) {
+      toast.error("Please select a role");
+      return false;
+    }
     return true;
   };
 
@@ -50,31 +60,49 @@ const Register = () => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    const trimmedData = Object.fromEntries(
-      Object.entries(formData).map(([key, value]) => [key, value.trim()])
-    );
+    const roleMapping = {
+      User: "ROLE_USER",
+      Employee: "ROLE_EMP",
+    };
+
+    const transformedRole = roleMapping[formData.role];
+
+    const trimmedData = {
+      ...formData,
+      role: transformedRole,
+    };
 
     setIsSubmitting(true);
 
     try {
+      const apiUrl = "http://localhost:5001";
+
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL || "http://localhost:5001"}/api/auth/signup`,
+        `${apiUrl}/api/auth/signup`,
         trimmedData
       );
 
       if (response.status === 201) {
-        toast.success(response.data.data);
+        const successMessage = "Registration successful!";
+        toast.success(successMessage);
+        toast.success("Please check your email to activate your account.");
+        setTimeout(() => {
+          navigate("/login");
+        }, 3000);
         setFormData({
           firstName: "",
           lastName: "",
           username: "",
           email: "",
           password: "",
+          role: "",
         });
       }
     } catch (error) {
-      const errorMessages =
-        error?.response?.data?.errors || ["Registration failed. Please try again."];
+      console.log(error);
+      const errorMessages = error?.response?.data?.errors || [
+        "Registration failed. Please try again.",
+      ];
       errorMessages.forEach((msg) => toast.error(msg));
     } finally {
       setIsSubmitting(false);
@@ -84,7 +112,7 @@ const Register = () => {
   return (
     <div className={styles.registerContainer}>
       <div className={styles.formSection}>
-        <p>START FOR FREE</p>
+        <p>START YOUR JOURNEY</p>
         <h1>Create your account</h1>
         <p>
           Already a member? <a href="/login">Log in</a>
@@ -125,17 +153,37 @@ const Register = () => {
             value={formData.password}
             onChange={handleInputChange}
           />
-          <button type="submit" className={styles.btnRegister} disabled={isSubmitting}>
+          <div className={styles.formGroup}>
+            <select
+              id="role"
+              name="role"
+              value={formData.role}
+              onChange={handleInputChange}
+              className={styles.selectField}
+              required
+            >
+              <option value="" disabled>
+                Select a role
+              </option>
+              <option value="User">User</option>
+              <option value="Employee">Employee</option>
+            </select>
+          </div>
+          <button
+            type="submit"
+            className={styles.btnRegister}
+            disabled={isSubmitting}
+          >
             {isSubmitting ? "Creating account..." : "Create account"}
           </button>
         </form>
       </div>
 
       <div className={styles.imageSection}>
-        {/* <img
+        <img
           src={registrationImage}
           alt="Person registering on a platform with a form"
-        /> */}
+        />
       </div>
     </div>
   );

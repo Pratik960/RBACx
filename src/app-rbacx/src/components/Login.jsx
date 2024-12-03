@@ -35,11 +35,20 @@ const Login = () => {
         try {
             const response = await axios.post("http://localhost:5001/api/auth/authenticate", trimmedData);
             console.log(response);
-            const { token, userRole } = response.data.data;
+            const { token, userRole, userId } = response.data.data;
             if (token && userRole) {
                 localStorage.setItem("authToken", token);
                 localStorage.setItem("userRole", userRole);
-                navigate("/userdashboard"); 
+                localStorage.setItem("userId", userId);
+                if (userRole === "ROLE_USER") {
+                    navigate("/app/user/dashboard");
+                } else if (userRole === "ROLE_ADMIN") {
+                    navigate("/app/admin/dashboard");
+                } else if (userRole === "ROLE_EMP") {
+                    navigate("/app/emp/dashboard");
+                } else {
+                    navigate("/login");
+                }
             }
         } catch (error) {
             const errorMessages = error?.response?.data?.errors || ["Login failed. Please try again."];

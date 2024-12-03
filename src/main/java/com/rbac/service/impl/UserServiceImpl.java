@@ -15,6 +15,10 @@ import org.jasypt.encryption.StringEncryptor;
 import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -26,22 +30,30 @@ import org.springframework.stereotype.Service;
 import com.rbac.config.security.web.AdminUserDetailsService;
 import com.rbac.config.security.web.JwtUtil;
 import com.rbac.model.dao.UsersDao;
+import com.rbac.model.dao.specification.TaskSpecs;
+import com.rbac.model.dao.specification.UserSpecs;
+import com.rbac.model.dto.auth.LoginResponse;
+import com.rbac.model.dto.task.TaskResponse;
 import com.rbac.model.dto.user.UserAuthenticateRequest;
+import com.rbac.model.dto.user.UserListRequest;
 import com.rbac.model.dto.user.UserRequest;
 import com.rbac.model.dto.user.UserResponse;
+import com.rbac.model.dto.user.UserStatusUpdateRequest;
 import com.rbac.model.dto.user.UserUpdateRequest;
-import com.rbac.model.dto.user.Auth.LoginResponse;
+import com.rbac.model.entity.Task;
 import com.rbac.model.entity.Users;
 import com.rbac.model.entity.Users.UserStatus;
 import com.rbac.service.UserService;
 import com.rbac.util.AppProperties;
 import com.rbac.util.AppUtil;
 import com.rbac.util.DefaultMessage;
+import com.rbac.util.ObjectUtil;
 import com.rbac.util.UsersUtil;
 import com.rbac.util.http.exceptions.CustomException;
 import com.rbac.util.http.exceptions.InternalServerErrorException;
 import com.rbac.util.http.exceptions.ResourceNotFoundException;
 import com.rbac.util.http.exceptions.UnauthorizedException;
+import com.rbac.util.http.response.PageResponse;
 import com.rbac.util.http.response.SuccessResponse;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -228,6 +240,7 @@ public class UserServiceImpl implements UserService {
             LoginResponse response = new LoginResponse();
             response.setToken(authToken);
             response.setUserRole(users.getAuthorities().name());
+            response.setUserId(users.getId());
             return new SuccessResponse<>(response, HttpStatus.OK.value());
         } catch (UnauthorizedException ex) {
             throw new CustomException(ex.getMessage(), ex);
@@ -328,15 +341,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public SuccessResponse<String> deleteUser(Integer id) {
         try {
-            Users authUser = usersUtil.getAuthUser(Users.UserStatus.ACTIVE);
 
             Users user = userDao.findByIdAndStatus(id, Users.UserStatus.ACTIVE)
                     .orElseThrow(
                             () -> new ResourceNotFoundException(DefaultMessage.RESOURCE_NOT_FOUND.getMessage("User")));
-
-            if (!Objects.equals(authUser.getId(), user.getId())) {
-                throw new CustomException("You are not authorized to delete another user's account.");
-            }
 
             user.setStatus(Users.UserStatus.INACTIVE);
             userDao.save(user);
@@ -348,6 +356,45 @@ public class UserServiceImpl implements UserService {
             throw new InternalServerErrorException(
                     DefaultMessage.INTERNAL_SERVER_ERROR.getMessage("deleting user account"));
         }
+    }
+
+    
+    @Override
+    public PageResponse<UserResponse> getAllUsers(UserListRequest listRequest) {
+        try {
+            
+            Page<Users> rsUsers = getAllUsersByRequest(listRequest, listRequest.isPageable());
+
+            List<UserResponse> userResponses = rsUsers.stream()
+                    .map(this::parseUserToUserResponse)
+                    .toList();
+
+            PageResponse<UserResponse> response = new PageResponse<>();
+            response.setLimit(rsUsers.getSize());
+            response.setPage(rsUsers.getNumber() + 1);
+            response.setTotal(rsUsers.getTotalElements());
+            response.setTotalPage(rsUsers.getTotalPages());
+            response.setData(userResponses);
+
+            return response;
+
+        } catch (Exception e) {
+            log.error(DefaultMessage.INTERNAL_SERVER_ERROR.getMessage(e.getMessage()), e);
+            throw new CustomException(DefaultMessage.FETCH_ERROR.getMessage("all users"));
+        }
+    }
+
+    @Override
+    public Page<Users> getAllUsersByRequest(UserListRequest userListRequest, boolean isPageable) {
+        Pageable pageable;
+        if (isPageable) {
+            pageable = ObjectUtil.getPageable(userListRequest.getPage(), userListRequest.getPerPage(),
+            userListRequest.getSortBy(), userListRequest.getSort());
+        } else {
+            pageable = PageRequest.of(0, Integer.MAX_VALUE);
+        }
+        Specification<Users> rsSpecification = UserSpecs.getUserList(userListRequest);
+        return userDao.findAll(rsSpecification, pageable);
     }
 
     private UserResponse parseUserToUserResponse(Users users) {
@@ -412,5 +459,25 @@ public class UserServiceImpl implements UserService {
 
         emailSender.send(message);
     }
+
+    @Override
+    public SuccessResponse<String> updateUserStatus(UserStatusUpdateRequest updateStatusRequest) {
+        try {
+
+            Users user = userDao.findById(updateStatusRequest.getUserId())
+                    .orElseThrow(
+                            () -> new ResourceNotFoundException(DefaultMessage.RESOURCE_NOT_FOUND.getMessage("User")));
+
+            user.setStatus(updateStatusRequest.getStatus());
+            userDao.save(user);
+
+            return new SuccessResponse<>(DefaultMessage.UPDATE_SUCCESS.getMessage("User"), HttpStatus.OK.value());
+        } catch (ResourceNotFoundException | CustomException ex) {
+            throw new CustomException(ex.getMessage(), ex);
+        } catch (Exception ex) {
+            throw new InternalServerErrorException(DefaultMessage.INTERNAL_SERVER_ERROR.getMessage("updating user status"));
+        }
+    }
+
 
 }

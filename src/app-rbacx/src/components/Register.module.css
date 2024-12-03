@@ -145,6 +145,38 @@ body {
   height: auto;
 }
 
+.formGroup select {
+  width: 50%;
+  padding: 15px 15px 15px;
+  border-radius: 25px;
+  background-color: var(--background-color);
+  border: 2px solid transparent; /* Initially no border */
+  color: var(--text-color);
+  font-size: 16px;
+  outline: none;
+  transition: border 0.2s, background-color 0.2s ease-in-out;
+}
+
+.formGroup select:focus {
+  border: 2px solid var(--accent-color); /* Focused border */
+  background-color: var(--dark-background);
+}
+
+.formGroup select option {
+  background-color: var(--dark-background); /* Background color for options */
+  color: var(--text-color); /* Text color */
+}
+
+.formGroup select:hover {
+  background-color: var(--dark-background); /* Background color on hover */
+}
+
+.formGroup select:focus,
+.formGroup select:hover {
+  border: 2px solid var(--accent-color); /* Border on hover or focus */
+}
+
+
 @media (max-width: 768px) {
   .registerContainer {
     flex-direction: column;

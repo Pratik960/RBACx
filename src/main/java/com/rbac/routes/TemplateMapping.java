@@ -1,7 +1,6 @@
 package com.rbac.routes;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import lombok.extern.slf4j.Slf4j;
@@ -23,9 +22,9 @@ public class TemplateMapping {
         return "index";
     }
     
-    @GetMapping(value = {"/", "/{x:[\\w\\-]+}"})
-    public String index() {
-        return "index.html";
+    @RequestMapping("/app/**")
+    public String appPath() {
+        return "index";
     }
 
 }

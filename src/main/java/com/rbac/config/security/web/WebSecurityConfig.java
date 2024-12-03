@@ -29,7 +29,7 @@ import com.rbac.util.AppProperties;
 @EnableMethodSecurity
 public class WebSecurityConfig {
     
-    private final String[] allowedPath = {"/actuator/**",  "/app/**", "/signup", "/login", "/activation",  "/error-page", "/error-page-view", "/", "/api/auth/activate-account", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/swagger-resources", "/api/auth/authenticate"};
+    private final String[] allowedPath = {"/app/**", "/signup", "/login", "/activation",  "/error-page", "/error-page-view", "/", "/api/auth/activate-account", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/swagger-resources", "/api/auth/authenticate"};
 
     // If the admin panel is hosted with this project
     private final String[] allowedResource = {"/build/**", "/Images/**", "/css/**", "/js/**"};
@@ -77,8 +77,8 @@ public class WebSecurityConfig {
             .headers(http -> http.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
             .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(
-                auth -> auth.requestMatchers(allowedPath)
-                            .permitAll().requestMatchers(allowedResource).permitAll()
+                auth -> auth.requestMatchers(allowedPath).permitAll()
+                            .requestMatchers(allowedResource).permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()
                             .requestMatchers(HttpMethod.GET, "/api/admin/**").hasAnyAuthority("ROLE_ADMIN")
                             .requestMatchers("/api/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER", "ROLE_EMP").anyRequest().authenticated())

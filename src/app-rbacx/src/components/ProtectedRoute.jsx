@@ -13,7 +13,7 @@ const ProtectedRoute = ({ element, requiredRole }) => {
     }
 
     if (!hasRequiredRole) {
-        return <Navigate to="/error" />;
+        return <Navigate to="/app/error" />;
     }
 
     return element;

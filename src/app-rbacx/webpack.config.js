@@ -41,7 +41,18 @@ const returnAll = (watchFile) => {
               },
             },
           ],
-        },        
+        },  
+        {
+          test: /\.(png|jpe?g|gif)$/i,
+          use: [
+            {
+              loader: 'file-loader',
+              options: {
+                name: '[path][name].[ext]',
+              },
+            },
+          ],
+        },      
         {
           test: /\.css$/, // Target .css files
           exclude: /\.module\.css$/, // Exclude .module.css files

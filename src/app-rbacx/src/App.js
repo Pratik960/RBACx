@@ -6,6 +6,8 @@ import UserDashboard from "./components/UserDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Toaster } from "react-hot-toast";
 import { Routes, Route } from "react-router-dom";
+import EmployeeDashboard from "./components/EmployeeDashboard";
+import AdminDashboard from "./components/AdminDashboard";
 function App() {
   return (
     <div>
@@ -39,7 +41,7 @@ function App() {
           <Route path="/signup" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route
-            path="/userdashboard"
+            path="/app/user/dashboard"
             element={
               <ProtectedRoute
                 element={<UserDashboard />}
@@ -47,8 +49,26 @@ function App() {
               />
             }
           />
+          <Route
+            path="/app/emp/dashboard"
+            element={
+              <ProtectedRoute
+                element={<EmployeeDashboard />}
+                requiredRole={"ROLE_EMP"}
+              />
+            }
+          />
+          <Route
+            path="/app/admin/dashboard"
+            element={
+              <ProtectedRoute
+                element={<AdminDashboard />}
+                requiredRole={"ROLE_ADMIN"}
+              />
+            }
+          />
           <Route path="*" element={<ErrorPage />} />
-          <Route path="/error" element={<ErrorPage />} />
+          <Route path="/app/error" element={<ErrorPage />} />
         </Routes>
       </>
     </div>

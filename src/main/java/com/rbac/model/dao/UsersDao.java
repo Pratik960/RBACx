@@ -3,12 +3,13 @@ package com.rbac.model.dao;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 import com.rbac.config.security.web.UserAuthorities;
 import com.rbac.model.entity.Users;
 
-public interface UsersDao extends JpaRepository<Users, Integer> {
+public interface UsersDao extends JpaRepository<Users, Integer>, JpaSpecificationExecutor<Users> {
     
     Optional<Users> findByUsernameAndStatus(String username, Users.UserStatus status);
 

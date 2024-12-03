@@ -1,5 +1,5 @@
 {
-  "hash": "52913e272c262c1d7577",
+  "hash": "2f0833321ffd3f8e7274",
   "publicPath": "/build/",
   "outputPath": "C:\\Users\\HP\\Desktop\\VRVSecurity\\RBACx\\src\\main\\resources\\static\\build\\",
   "assetsByChunkName": {
@@ -11,7 +11,7 @@
     {
       "type": "asset",
       "name": "main.js",
-      "size": 4817904,
+      "size": 4921559,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
@@ -32,8 +32,29 @@
     },
     {
       "type": "asset",
+      "name": "src/components/images/RBACxLogo.png",
+      "size": 18465,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "sourceFilename": "src/components/images/RBACxLogo.png"
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [
+        "main"
+      ],
+      "auxiliaryChunkIdHints": [],
+      "chunks": [],
+      "auxiliaryChunks": [
+        "main"
+      ]
+    },
+    {
+      "type": "asset",
       "name": "../../templates/index.html",
-      "size": 1458,
+      "size": 1431,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
@@ -59,8 +80,8 @@
       ],
       "filteredAssets": 0,
       "assetsSize": null,
-      "filteredAuxiliaryAssets": 0,
-      "auxiliaryAssetsSize": 0,
+      "filteredAuxiliaryAssets": 1,
+      "auxiliaryAssetsSize": null,
       "children": {},
       "childAssets": {}
     }

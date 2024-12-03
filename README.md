@@ -101,7 +101,7 @@ Navigate to cloned repository
 
 ## Notes
 
-> ⚠️ You might notice some **design inconsistencies**—we like to call it "character." 😅 Enjoy the charm!
+> ⚠️ You might notice some **design inconsistencies**—I like to call it "character." 😅 Enjoy the charm!
 > 
 > We do not have to start frontend as it is packaged with the spring boot jar file.
 > 

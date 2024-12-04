@@ -90,7 +90,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                  UsernameNotFoundException | BadCredentialsException e) {
             logger.error("UnauthorizedException ", e);
             handleException(e, response, HttpStatus.UNAUTHORIZED);
-//            response.sendRedirect(appProperties.getReactUrl().concat(appProperties.getReactLoginPath()));
         } catch (IOException | ServletException e) {
             logger.error("Error in admin filter ", e);
             handleException(e, response, HttpStatus.INTERNAL_SERVER_ERROR);

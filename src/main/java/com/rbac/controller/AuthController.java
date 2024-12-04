@@ -52,26 +52,28 @@ public class AuthController {
     private final RefreshTokenService refreshTokenService;
 
     @Autowired
-    public AuthController(UserService userService, RateLimiterFallback fallback, RefreshTokenService refreshTokenService){
+    public AuthController(UserService userService, RateLimiterFallback fallback,
+            RefreshTokenService refreshTokenService) {
         this.userService = userService;
         this.fallback = fallback;
         this.refreshTokenService = refreshTokenService;
     }
-    
-    @Operation(
-            summary = "Activate User's Account",
-            description = "It activates users' account by verifying verification code provided to registered email")
+
+    @Operation(summary = "Activate User's Account", description = "It activates users' account by verifying verification code provided to registered email")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "successful operation")
+            @ApiResponse(responseCode = "200", description = "Account activated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid verification code"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("/activate-account")
-    public ResponseEntity<HttpStatus> activateAccount(@RequestParam Map<String,String> params, HttpServletResponse response){
-        try{
+    public ResponseEntity<HttpStatus> activateAccount(@RequestParam Map<String, String> params,
+            HttpServletResponse response) {
+        try {
             String redirectUrl = userService.activateAccount(params);
-            if(!AppUtil.isNullOrEmptyString(redirectUrl)){
+            if (!AppUtil.isNullOrEmptyString(redirectUrl)) {
                 response.sendRedirect(redirectUrl);
             }
-        }catch (IOException ex){
+        } catch (IOException ex) {
             log.error("Error while verifying user account : ", ex);
             throw new CustomException("Something went wring while activating user account.");
         }
@@ -79,11 +81,13 @@ public class AuthController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @Operation(
-            summary = "Create new user",
-            description = "Creates a new user")
+    @Operation(summary = "Create new user", description = "Creates a new user")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "successful operation")
+            @ApiResponse(responseCode = "201", description = "User created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid user data"),
+            @ApiResponse(responseCode = "409", description = "User already exists"),
+            @ApiResponse(responseCode = "500", description = "Internal server error"),
+            @ApiResponse(responseCode = "429", description = "Too many requests (rate limit exceeded)")
     })
     @PostMapping("/signup")
     @RateLimiter(name = "default", fallbackMethod = "rateLimitFallback")
@@ -92,26 +96,35 @@ public class AuthController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-
-    @Operation(
-        summary = "Authenticate user for sign in",
-        description = "Authenticate an user for sign in operation")
+    @Operation(summary = "Authenticate user for sign in", description = "Authenticate an user for sign in operation")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "successful operation")
+            @ApiResponse(responseCode = "200", description = "User authenticated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid credentials"),
+            @ApiResponse(responseCode = "500", description = "Internal server error"),
+            @ApiResponse(responseCode = "429", description = "Too many requests (rate limit exceeded)")
     })
     @PostMapping("/authenticate")
     @RateLimiter(name = "highPriorityEndpoint", fallbackMethod = "rateLimitFallback")
-    public ResponseEntity<SuccessResponse<LoginResponse>> loginUser(@RequestBody UserAuthenticateRequest userRequest, HttpServletRequest request) {
+    public ResponseEntity<SuccessResponse<LoginResponse>> loginUser(@RequestBody UserAuthenticateRequest userRequest,
+            HttpServletRequest request) {
         SuccessResponse<LoginResponse> response = userService.authenticateUser(userRequest, request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @Operation(summary = "Refresh token", description = "Generate a new access token using a valid refresh token")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Token refreshed successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid refresh token"),
+            @ApiResponse(responseCode = "500", description = "Internal server error"),
+            @ApiResponse(responseCode = "429", description = "Too many requests (rate limit exceeded)")
+    })
     @PostMapping("/refreshToken")
-    public ResponseEntity<SuccessResponse<LoginResponse>> refreshToken(@RequestBody RefreshTokenRequest tokenRequest){
+    @RateLimiter(name = "default", fallbackMethod = "rateLimitFallback")
+    public ResponseEntity<SuccessResponse<LoginResponse>> refreshToken(@RequestBody RefreshTokenRequest tokenRequest) {
         SuccessResponse<LoginResponse> response = refreshTokenService.refreshToken(tokenRequest);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
- 
+
     public ResponseEntity<String> rateLimitFallback(Exception ex) {
         return fallback.rateLimitFallback(ex);
     }

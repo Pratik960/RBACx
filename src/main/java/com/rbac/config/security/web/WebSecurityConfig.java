@@ -31,7 +31,6 @@ public class WebSecurityConfig {
     
     private final String[] allowedPath = {"/app/**", "/signup", "/login", "/activation",  "/error-page", "/error-page-view", "/", "/api/auth/activate-account", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/swagger-resources", "/api/auth/authenticate", "/api/auth/refreshToken"};
 
-    // If the admin panel is hosted with this project
     private final String[] allowedResource = {"/build/**", "/Images/**", "/css/**", "/js/**"};
 
     private final AdminUserDetailsService adminUserDetailsService;

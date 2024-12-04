@@ -39,21 +39,21 @@ body {
     flex-direction: column;
     width: 100%;
     justify-content: space-between; 
-    position: relative; /* Position relative to allow absolute positioning of child elements */
+    position: relative;
 }
 
 .closeButton {
-    position: absolute; /* Position it absolutely */
+    position: absolute;
     right: 0px;
-    background: transparent; /* No background */
-    border: none; /* No border */
-    cursor: pointer; /* Pointer cursor */
-    color: var(--text-color); /* Use your theme color */
-    transition: color 0.3s; /* Smooth transition for color */
+    background: transparent;
+    border: none; 
+    cursor: pointer; 
+    color: var(--text-color);
+    transition: color 0.3s;
 }
 
 .closeButton:hover {
-    color: var(--hover-accent-color); /* Change color on hover */
+    color: var(--hover-accent-color);
 }
 
 .welcomeText {
@@ -85,7 +85,7 @@ body {
 }
 
 .formGroup:last-of-type {
-    margin-bottom: 0; /* No margin for last input */
+    margin-bottom: 0;
 }
 
 .formGroup label {
@@ -119,11 +119,11 @@ body {
 }
 
 .formGroup input::placeholder {
-    color: transparent; /* Keep placeholder invisible */
+    color: transparent; 
 }
 
 .formGroup input:focus {
-    border: 2px solid var(--accent-color); /* Outline when focused */
+    border: 2px solid var(--accent-color);
 }
 
 .btnRegister {
@@ -140,7 +140,7 @@ body {
 }
 
 .btnRegister:hover {
-    background-color: var(--hover-accent-color); /* Change on hover */
+    background-color: var(--hover-accent-color);
 }
 
 .btnRegister:disabled {
@@ -155,22 +155,22 @@ body {
 
 .passwordToggleBtn {
     position: absolute;
-    right: 20px; /* Adjust based on your design */
-    top: 50%; /* Center vertically */
-    transform: translateY(-50%); /* Center the icon */
-    background: none; /* No background */
-    border: none; /* No border */
-    cursor: pointer; /* Pointer cursor */
-    color: inherit; /* Inherit color from parent */
+    right: 20px; 
+    top: 50%; 
+    transform: translateY(-50%); 
+    background: none; 
+    border: none; 
+    cursor: pointer;
+    color: inherit; 
 }
 
-/* Responsive Styles */
+
 @media (max-width: 768px) {
     .loginContainer {
-        padding: 20px; /* Less padding on smaller screens */
+        padding: 20px; 
     }
 
     .formSection {
-        width: 100%; /* Full width on smaller screens */
+        width: 100%; 
     }
 }

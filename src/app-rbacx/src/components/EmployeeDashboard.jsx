@@ -50,15 +50,15 @@ const EmployeeDashboard = () => {
 
       if (response.data && Array.isArray(response.data.data)) {
         setState(response.data.data);
-        setTotalPages(response.data.totalPage); // Save the total pages
+        setTotalPages(response.data.totalPage);
         if (response.data.data.length < 5) {
-          setHasMore(false); // Stop loading if fewer than 5 tasks were returned
+          setHasMore(false); 
         } else {
-          setHasMore(true); // Keep loading if 5 tasks are returned
+          setHasMore(true); 
         }
       } else {
         setState([]);
-        setHasMore(false); // No more tasks
+        setHasMore(false); 
       }
     } catch (error) {
       console.error("Error fetching tasks:", error);
@@ -245,7 +245,7 @@ const EmployeeDashboard = () => {
           setPendingPage,
           hasMorePendingTasks,
           pendingTasks,
-          totalPagesPending // Pass totalPages
+          totalPagesPending 
         )}
       </div>
 
@@ -269,7 +269,7 @@ const EmployeeDashboard = () => {
           setAssignedPage,
           hasMoreAssignedTasks,
           assignedTasks,
-          totalPagesAssigned // Pass totalPages
+          totalPagesAssigned
         )}
       </div>
 
@@ -293,7 +293,7 @@ const EmployeeDashboard = () => {
           setCompletedPage,
           hasMoreCompletedTasks,
           completedTasks,
-          totalPagesCompleted // Pass totalPages
+          totalPagesCompleted
         )}
       </div>
     </div>

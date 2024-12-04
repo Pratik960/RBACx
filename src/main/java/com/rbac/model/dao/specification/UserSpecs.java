@@ -36,15 +36,17 @@ public class UserSpecs {
             predicates.add(criteriaBuilder.like(root.get("username"), "%" + search + "%"));
         }
 
-
+        // filter by status
         if (!AppUtil.isNullOrEmptyString(status)) {
             predicates.add(criteriaBuilder.equal(root.get("status"), Users.UserStatus.valueOf(status)));
         }
 
+        // filter by role
         if(!AppUtil.isNullOrEmptyString(role)){
             predicates.add(criteriaBuilder.equal(root.get("authorities"), UserAuthorities.valueOf(role)));
         }
 
+        // filter by date
         Date startDate = AppUtil.parseDate(userListRequest.getStartDate());
         Date endDate = AppUtil.parseDate(userListRequest.getEndDate());
         if (!AppUtil.isNullOrEmptyString(endDate)) {

@@ -1,7 +1,7 @@
 .dashboardContainer {
   padding: 20px;
   font-family: Arial, sans-serif;
-  background-color: #f4f7fc; /* Light background for the main container */
+  background-color: #f4f7fc; 
   min-height: 100vh;
 }
 
@@ -38,14 +38,14 @@ h2 {
 }
 
 .tasksSection {
-  background-color: #ffffff; /* Light background for each section */
+  background-color: #ffffff; 
   padding: 15px 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
   color: #333333;
-  max-height: 400px; /* Set a fixed height for the section */
-  overflow-y: auto;  /* Enable vertical scrolling */
+  max-height: 400px; 
+  overflow-y: auto;  
 }
 
 .tasksSection h3 {
@@ -58,17 +58,17 @@ h2 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #fafafa; /* Subtle background for task items */
+  background-color: #fafafa; 
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 6px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Soft shadow */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); 
 }
 
 .taskItem span {
   flex: 1;
   font-size: 14px;
-  color: #555555; /* Light text for task details */
+  color: #555555; 
 }
 
 .taskItem select {
@@ -83,7 +83,7 @@ h2 {
 
 .btnAssignTask,
 .btnCompleteTask {
-  background-color: #4caf50; /* Green for assign/complete buttons */
+  background-color: #4caf50; 
   color: white;
   border: none;
   border-radius: 4px;
@@ -95,7 +95,7 @@ h2 {
 
 .btnAssignTask:hover,
 .btnCompleteTask:hover {
-  background-color: #388e3c; /* Darker green on hover */
+  background-color: #388e3c;
 }
 
 .taskItem select:focus,

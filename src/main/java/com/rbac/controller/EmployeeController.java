@@ -27,22 +27,26 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @Slf4j
 @RequestMapping("/api/emp")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:5001")
 @PreAuthorize("hasAuthority('ROLE_EMP')")
 public class EmployeeController {
 
     private final TaskService taskService;
 
     @Autowired
-    public EmployeeController(TaskService taskService){
+    public EmployeeController(TaskService taskService) {
         this.taskService = taskService;
     }
-    
-     @Operation(summary = "Assign task to user", description = "assigns task to user")
+
+    @Operation(summary = "Assign task to user", description = "assigns task to user")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "successful operation")
+            @ApiResponse(responseCode = "200", description = "Task successfully assigned to user"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data or request body"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized access"),
+            @ApiResponse(responseCode = "403", description = "Forbidden, insufficient permissions"),
+            @ApiResponse(responseCode = "404", description = "User or task not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error"),
     })
-    @PreAuthorize("hasAuthority('ROLE_EMP')")
     @PutMapping()
     public ResponseEntity<SuccessResponse<String>> assignTask(
             @Valid @RequestBody TaskAssignRequest assignRequest) {

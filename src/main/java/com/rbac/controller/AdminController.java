@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @Slf4j
 @RequestMapping("/api/admin")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:5001")
 @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 public class AdminController {
 
@@ -47,10 +47,11 @@ public class AdminController {
         this.fallback = fallback;
     }
 
-    // add task
     @Operation(summary = "Create new task", description = "Creates a new task")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "successful operation")
+            @ApiResponse(responseCode = "200", description = "Task created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid task request"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping("/add/task")
     public ResponseEntity<SuccessResponse<TaskResponse>> addTask(@Valid @RequestBody TaskRequest taskRequest) {
@@ -60,7 +61,11 @@ public class AdminController {
 
     @Operation(summary = "Delete user profile", description = "Delete profile of user by updating its status to inactive")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "successful operation")
+            @ApiResponse(responseCode = "200", description = "User profile deleted successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid user ID"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "429", description = "Too many requests (rate limit exceeded)"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PutMapping("/deleteAccount/{id}")
     @RateLimiter(name = "highPriorityEndpoint", fallbackMethod = "rateLimitFallback")
@@ -71,10 +76,14 @@ public class AdminController {
 
     @Operation(summary = "Update user status", description = "update status of user")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "successful operation")
+            @ApiResponse(responseCode = "200", description = "User status updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid update request"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PutMapping("/update/status")
-    public ResponseEntity<SuccessResponse<String>> updateUserStatus(@Valid @RequestBody UserStatusUpdateRequest updateRequest) {
+    public ResponseEntity<SuccessResponse<String>> updateUserStatus(
+            @Valid @RequestBody UserStatusUpdateRequest updateRequest) {
         SuccessResponse<String> response = userService.updateUserStatus(updateRequest);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

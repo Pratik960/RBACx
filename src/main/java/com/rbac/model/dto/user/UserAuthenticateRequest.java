@@ -3,10 +3,12 @@ package com.rbac.model.dto.user;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 
-@Data
+@Getter
+@Setter
 public class UserAuthenticateRequest {
     
     @NotBlank(message = "Username must not be blank.")

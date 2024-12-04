@@ -38,7 +38,7 @@ import com.rbac.util.http.response.SuccessResponse;
 @RestController
 @Slf4j
 @RequestMapping("/api/user")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:5001")
 public class UserController {
 
         private final UserService userService;
@@ -54,7 +54,8 @@ public class UserController {
 
         @Operation(summary = "Fetch one user based on given Id", description = "fetches one user based on provided Id")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "successful operation")
+                        @ApiResponse(responseCode = "200", description = "User found and returned"),
+                        @ApiResponse(responseCode = "404", description = "User not found")
         })
         @GetMapping("/{id}")
         public ResponseEntity<SuccessResponse<UserResponse>> findUserById(@PathVariable Integer id) {
@@ -64,7 +65,8 @@ public class UserController {
 
         @Operation(summary = "Fetch all users", description = "fetches all users entities")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "successful operation")
+                        @ApiResponse(responseCode = "200", description = "Users successfully retrieved"),
+                        @ApiResponse(responseCode = "500", description = "Internal server error")
         })
         @GetMapping
         @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_EMP')")
@@ -75,7 +77,10 @@ public class UserController {
 
         @Operation(summary = "Update user profile", description = "update profile of user")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "successful operation")
+                        @ApiResponse(responseCode = "200", description = "User profile updated successfully"),
+                        @ApiResponse(responseCode = "400", description = "Invalid input data"),
+                        @ApiResponse(responseCode = "404", description = "User not found"),
+                        @ApiResponse(responseCode = "500", description = "Internal server error")
         })
         @PreAuthorize("hasAuthority('ROLE_USER')")
         @PutMapping()
@@ -87,7 +92,8 @@ public class UserController {
 
         @Operation(summary = "Fetch all tasks", description = "fetches all tasks with filter, search and sort")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "successful operation")
+                        @ApiResponse(responseCode = "200", description = "Tasks successfully retrieved"),
+                        @ApiResponse(responseCode = "500", description = "Internal server error")
         })
         @GetMapping("/allTask")
         public ResponseEntity<PageResponse<TaskResponse>> getAllTasks(@Valid TaskListRequest listRequest) {
@@ -97,7 +103,9 @@ public class UserController {
 
         @Operation(summary = "Fetch all users", description = "fetches all users with filter, search and sort")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "successful operation")
+                        @ApiResponse(responseCode = "200", description = "Users successfully retrieved"),
+                        @ApiResponse(responseCode = "500", description = "Internal server error"),
+                        @ApiResponse(responseCode = "429", description = "Too many requests (rate limit exceeded)")
         })
         @GetMapping("/allUsers")
         @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_EMP')")
@@ -109,7 +117,10 @@ public class UserController {
 
         @Operation(summary = "Update task status", description = "update status of task")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "successful operation")
+                        @ApiResponse(responseCode = "200", description = "Task status updated successfully"),
+                        @ApiResponse(responseCode = "400", description = "Invalid task status update request"),
+                        @ApiResponse(responseCode = "404", description = "Task not found"),
+                        @ApiResponse(responseCode = "500", description = "Internal server error")
         })
         @PutMapping("/update/status")
         public ResponseEntity<SuccessResponse<TaskResponse>> updateTaskStatus(

@@ -48,13 +48,28 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     private final JwtUtil jwtUtil;
 
     @Autowired
-    public RefreshTokenServiceImpl(RefreshTokenDao refreshTokenDao, UsersDao usersDao, AdminUserDetailsService adminUserDetailsService, JwtUtil jwtUtil) {
+    public RefreshTokenServiceImpl(RefreshTokenDao refreshTokenDao, UsersDao usersDao,
+            AdminUserDetailsService adminUserDetailsService, JwtUtil jwtUtil) {
         this.refreshTokenDao = refreshTokenDao;
         this.usersDao = usersDao;
         this.adminUserDetailsService = adminUserDetailsService;
         this.jwtUtil = jwtUtil;
     }
 
+    /**
+     * Creates or updates a refresh token for a user, extending its expiry if it
+     * already exists.
+     *
+     * @param username the username of the user for whom the refresh token will be
+     *                 created
+     * @return {@link RefreshToken} the created or updated refresh token
+     * @throws ResourceNotFoundException    if the user with the given username is
+     *                                      not found or is inactive
+     * @throws CustomException              if an error occurs during the process of
+     *                                      creating or updating the refresh token
+     * @throws InternalServerErrorException if an unexpected error occurs while
+     *                                      creating the refresh token
+     */
     @Override
     public RefreshToken createRefreshToken(String username) {
 
@@ -62,20 +77,21 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
             RefreshToken refreshToken;
             Users user = usersDao.findByUsernameAndStatus(username, Users.UserStatus.ACTIVE)
-                    .orElseThrow(() -> new ResourceNotFoundException(DefaultMessage.RESOURCE_NOT_FOUND.getMessage("User")));
+                    .orElseThrow(
+                            () -> new ResourceNotFoundException(DefaultMessage.RESOURCE_NOT_FOUND.getMessage("User")));
 
             Optional<RefreshToken> optRefreshToken = refreshTokenDao.findByUser(user);
 
-            if(optRefreshToken.isPresent()){
+            if (optRefreshToken.isPresent()) {
                 refreshToken = optRefreshToken.get();
                 refreshToken.setExpiry(Instant.now().plusMillis(refreshTokenExpiry));
-            }else{
+            } else {
                 refreshToken = new RefreshToken();
                 refreshToken.setRefreshToken(AppUtil.generateUUID());
                 refreshToken.setExpiry(Instant.now().plusMillis(refreshTokenExpiry));
                 refreshToken.setUser(user);
             }
-           
+
             refreshTokenDao.save(refreshToken);
             return refreshToken;
 
@@ -87,13 +103,25 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         }
     }
 
+    /**
+     * Verifies the provided refresh token by checking its existence and expiry.
+     * If the token is expired, it is deleted and an exception is thrown.
+     *
+     * @param refreshToken the refresh token to be verified
+     * @return {@link RefreshToken} the valid refresh token
+     * @throws CustomException              if the refresh token is not found or has
+     *                                      expired
+     * @throws InternalServerErrorException if an unexpected error occurs while
+     *                                      verifying the refresh token
+     */
     @Override
     public RefreshToken verifyRefreshToken(String refreshToken) {
         try {
             RefreshToken optRefreshToken = refreshTokenDao.findByRefreshToken(refreshToken)
-                    .orElseThrow(() -> new CustomException(DefaultMessage.RESOURCE_NOT_FOUND.getMessage("Refresh Token")));
+                    .orElseThrow(
+                            () -> new CustomException(DefaultMessage.RESOURCE_NOT_FOUND.getMessage("Refresh Token")));
 
-            if(optRefreshToken.getExpiry().compareTo(Instant.now()) < 0){
+            if (optRefreshToken.getExpiry().compareTo(Instant.now()) < 0) {
                 refreshTokenDao.delete(optRefreshToken);
                 throw new CustomException("Refresh Token Expired !!");
             }
@@ -107,9 +135,22 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         }
     }
 
+    /**
+     * Generates a new authentication token using a valid refresh token.
+     *
+     * @param tokenRequest the request containing the refresh token to be verified
+     * @return {@link SuccessResponse}<{@link LoginResponse}> the response
+     *         containing the new authentication token,
+     *         the original refresh token, user role, and user ID
+     * @throws CustomException              if the refresh token is invalid,
+     *                                      expired, or if there is any
+     *                                      application-specific error
+     * @throws InternalServerErrorException if an unexpected error occurs while
+     *                                      generating the new token
+     */
     @Override
     public SuccessResponse<LoginResponse> refreshToken(RefreshTokenRequest tokenRequest) {
-        try{
+        try {
             RefreshToken refreshToken = verifyRefreshToken(tokenRequest.getRefreshToken());
             Users user = refreshToken.getUser();
             UserDetails userDetails = adminUserDetailsService.loadUserByUsers(user);
@@ -125,7 +166,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
             response.setUserRole(user.getAuthorities().name());
             response.setUserId(user.getId());
             return new SuccessResponse<>(response, HttpStatus.OK.value());
-        }catch (ResourceNotFoundException | CustomException ex) {
+        } catch (ResourceNotFoundException | CustomException ex) {
             throw new CustomException(ex.getMessage(), ex);
         } catch (Exception ex) {
             throw new InternalServerErrorException(

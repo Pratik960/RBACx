@@ -7,7 +7,7 @@
 }
 
 .errorCard {
-    background-color: #ff6f00;  /* Orange theme */
+    background-color: #ff6f00; 
     color: white;
     padding: 40px;
     border-radius: 12px;
@@ -29,7 +29,7 @@
     color: rgba(255, 255, 255, 0.8);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
     .errorCard {
         padding: 30px;
     }

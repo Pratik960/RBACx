@@ -38,14 +38,17 @@ public class TaskSpecs {
             predicates.add(criteriaBuilder.like(root.get("title"), "%" + search + "%"));
         }
 
+        // filter by assigned user
         if (!AppUtil.isNullOrEmptyString(users)) {
             predicates.add(criteriaBuilder.equal(root.get("assignedUser"), users));
         }
 
+        // filter by status
         if (!AppUtil.isNullOrEmptyString(status)) {
             predicates.add(criteriaBuilder.equal(root.get("status"), Task.TaskStatus.valueOf(status)));
         }
 
+        // filter by date
         Date startDate = AppUtil.parseDate(taskListRequest.getStartDate());
         Date endDate = AppUtil.parseDate(taskListRequest.getEndDate());
         if (!AppUtil.isNullOrEmptyString(endDate)) {

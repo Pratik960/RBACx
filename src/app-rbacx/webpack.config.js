@@ -46,7 +46,7 @@ const returnAll = (watchFile) => {
           test: /\.(png|jpe?g|gif)$/i,
           use: [
             {
-              loader: 'file-loader',
+              loader: 'file-loader', // handle images
               options: {
                 name: '[path][name].[ext]',
               },

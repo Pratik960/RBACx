@@ -86,7 +86,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     public UserServiceImpl(UsersDao userDao, BCryptPasswordEncoder passwordEncoder,
             AdminUserDetailsService adminUserDetailsService, JwtUtil jwtUtil, StringEncryptor encryptor,
-            AppProperties appProperties, JavaMailSender emailSender, UsersUtil usersUtil, RefreshTokenService refreshTokenService) {
+            AppProperties appProperties, JavaMailSender emailSender, UsersUtil usersUtil,
+            RefreshTokenService refreshTokenService) {
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
         this.adminUserDetailsService = adminUserDetailsService;
@@ -217,7 +218,8 @@ public class UserServiceImpl implements UserService {
      *                               user
      */
     @Override
-    public SuccessResponse<LoginResponse> authenticateUser(UserAuthenticateRequest userRequest, HttpServletRequest request) {
+    public SuccessResponse<LoginResponse> authenticateUser(UserAuthenticateRequest userRequest,
+            HttpServletRequest request) {
 
         String authToken;
         try {
@@ -311,7 +313,17 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    
+    /**
+     * Updates the authenticated user's profile details.
+     *
+     * @param updateRequest the request object containing new profile details
+     * @return {@link SuccessResponse}<{@link UserResponse}> the updated user profile
+     *               response
+     * @throws CustomException              if the user is unauthorized or a general
+     *                                      error occurs
+     * @throws ResourceNotFoundException    if the user is not found or inactive
+     * @throws InternalServerErrorException for unexpected server errors
+     */
     @Override
     public SuccessResponse<UserResponse> updateUser(UserUpdateRequest updateRequest) {
 
@@ -325,7 +337,6 @@ public class UserServiceImpl implements UserService {
             if (!Objects.equals(authUser.getId(), user.getId())) {
                 throw new CustomException("You are not authorized to update another user's profile.");
             }
-            // TODO check if email already exists
 
             user.setFirstName(updateRequest.getFirstName());
             user.setLastName(updateRequest.getLastName());
@@ -342,6 +353,15 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /**
+     * Marks a user as inactive (soft delete) by updating their status.
+     *
+     * @param id the ID of the user to be deleted
+     * @return a success response confirming the user deletion
+     * @throws ResourceNotFoundException    if the user is not found or inactive
+     * @throws CustomException              for general business logic errors
+     * @throws InternalServerErrorException for unexpected server errors
+     */
     @Override
     public SuccessResponse<String> deleteUser(Integer id) {
         try {
@@ -362,11 +382,19 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    
+    /**
+     * Retrieves a paginated list of users based on the specified filter and
+     * pagination criteria.
+     *
+     * @param listRequest the request containing filtering and pagination options
+     * @return a paginated response containing user details
+     * @throws CustomException if an error occurs while fetching user data
+     */
+
     @Override
     public PageResponse<UserResponse> getAllUsers(UserListRequest listRequest) {
         try {
-            
+
             Page<Users> rsUsers = getAllUsersByRequest(listRequest, listRequest.isPageable());
 
             List<UserResponse> userResponses = rsUsers.stream()
@@ -388,17 +416,53 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /**
+     * Retrieves a paginated or unpaginated list of users based on the specified
+     * filter criteria.
+     *
+     * @param userListRequest the request containing filtering and sorting options
+     * @param isPageable      a flag indicating whether pagination should be applied
+     * @return a paginated or complete list of users matching the criteria
+     */
     @Override
     public Page<Users> getAllUsersByRequest(UserListRequest userListRequest, boolean isPageable) {
         Pageable pageable;
         if (isPageable) {
             pageable = ObjectUtil.getPageable(userListRequest.getPage(), userListRequest.getPerPage(),
-            userListRequest.getSortBy(), userListRequest.getSort());
+                    userListRequest.getSortBy(), userListRequest.getSort());
         } else {
             pageable = PageRequest.of(0, Integer.MAX_VALUE);
         }
         Specification<Users> rsSpecification = UserSpecs.getUserList(userListRequest);
         return userDao.findAll(rsSpecification, pageable);
+    }
+
+    /**
+     * Updates the status of a user.
+     *
+     * @param updateStatusRequest the request containing the user ID and new status
+     * @return a success response indicating the status update was successful
+     * @throws ResourceNotFoundException if the user is not found
+     * @throws CustomException           for other application-specific errors
+     */
+    @Override
+    public SuccessResponse<String> updateUserStatus(UserStatusUpdateRequest updateStatusRequest) {
+        try {
+
+            Users user = userDao.findById(updateStatusRequest.getUserId())
+                    .orElseThrow(
+                            () -> new ResourceNotFoundException(DefaultMessage.RESOURCE_NOT_FOUND.getMessage("User")));
+
+            user.setStatus(updateStatusRequest.getStatus());
+            userDao.save(user);
+
+            return new SuccessResponse<>(DefaultMessage.UPDATE_SUCCESS.getMessage("User"), HttpStatus.OK.value());
+        } catch (ResourceNotFoundException | CustomException ex) {
+            throw new CustomException(ex.getMessage(), ex);
+        } catch (Exception ex) {
+            throw new InternalServerErrorException(
+                    DefaultMessage.INTERNAL_SERVER_ERROR.getMessage("updating user status"));
+        }
     }
 
     private UserResponse parseUserToUserResponse(Users users) {
@@ -441,10 +505,10 @@ public class UserServiceImpl implements UserService {
 
         long differenceInMillis = currentTime.getTime() - updatedAt.getTime();
 
-        long differenceInYears = differenceInMillis / (1000L * 60 * 60 * 24 *365);
+        long differenceInYears = differenceInMillis / (1000L * 60 * 60 * 24 * 365);
 
         // Check if the difference is less than or equal to 1 year
-        return differenceInYears <= 24;
+        return differenceInYears <= 1;
     }
 
     private void sendActivationEmail(String email, String activationToken) {
@@ -452,7 +516,7 @@ public class UserServiceImpl implements UserService {
         String activationLink = String.format("%s/api/auth/activate-account?token=%s", appProperties.getUrl(),
                 activationToken);
         String subject = "Activate your account";
-        String messageBody = "Activation link will be expired in 10 minutes. Please click the following link to activate your account: "
+        String messageBody = "Activation link will be expired in 1 year. Please click the following link to activate your account: "
                 + activationLink;
 
         SimpleMailMessage message = new SimpleMailMessage();
@@ -463,25 +527,5 @@ public class UserServiceImpl implements UserService {
 
         emailSender.send(message);
     }
-
-    @Override
-    public SuccessResponse<String> updateUserStatus(UserStatusUpdateRequest updateStatusRequest) {
-        try {
-
-            Users user = userDao.findById(updateStatusRequest.getUserId())
-                    .orElseThrow(
-                            () -> new ResourceNotFoundException(DefaultMessage.RESOURCE_NOT_FOUND.getMessage("User")));
-
-            user.setStatus(updateStatusRequest.getStatus());
-            userDao.save(user);
-
-            return new SuccessResponse<>(DefaultMessage.UPDATE_SUCCESS.getMessage("User"), HttpStatus.OK.value());
-        } catch (ResourceNotFoundException | CustomException ex) {
-            throw new CustomException(ex.getMessage(), ex);
-        } catch (Exception ex) {
-            throw new InternalServerErrorException(DefaultMessage.INTERNAL_SERVER_ERROR.getMessage("updating user status"));
-        }
-    }
-
 
 }

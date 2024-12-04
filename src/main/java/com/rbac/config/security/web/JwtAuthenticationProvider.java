@@ -24,7 +24,6 @@ public class JwtAuthenticationProvider implements AuthenticationProvider{
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
     
-        // Implement JWT token validation and user details extraction here
         String authToken = (String) authentication.getCredentials();
 
         // Validate JWT token

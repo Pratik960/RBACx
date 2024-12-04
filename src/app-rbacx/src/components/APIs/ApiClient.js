@@ -52,7 +52,6 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       } catch (refreshError) {
         console.error("Token refresh failed:", refreshError);
-        // Handle refresh failure (e.g., log out user, redirect to login page)
         window.location.href = "/login";
         return Promise.reject(refreshError);
       }

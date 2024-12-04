@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import apiClient from "./APIs/ApiClient";
 import toast from "react-hot-toast";
 import * as styles from "./UserDashboard.module.css";
 
@@ -20,15 +20,8 @@ const UserDashboard = () => {
 
   const fetchUserData = async () => {
     try {
-      const token = localStorage.getItem("authToken");
       const userId = localStorage.getItem("userId");
-      const response = await axios.get(`http://localhost:5001/api/user/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          accept: "*/*",
-        },
-      });
-
+      const response = await apiClient.get(`/api/user/${userId}`);
       const userData = response.data.data;
       setUser(userData);
       setEditedUser(userData);
@@ -40,9 +33,8 @@ const UserDashboard = () => {
 
   const fetchTasks = async () => {
     try {
-      const token = localStorage.getItem("authToken");
       const userId = localStorage.getItem("userId");
-      const response = await axios.get("http://localhost:5001/api/user/allTask", {
+      const response = await apiClient.get("/api/user/allTask", {
         params: {
           page: page,
           perPage: 5,
@@ -54,11 +46,7 @@ const UserDashboard = () => {
           startDate: "",
           endDate: "",
           pageable: true,
-        },
-        headers: {
-          Authorization: `Bearer ${token}`,
-          accept: "*/*",
-        },
+        }
       });
 
       const taskData = response.data.data;
@@ -72,6 +60,7 @@ const UserDashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
+    localStorage.removeItem("refreshToken");
     localStorage.removeItem("userRole");
     localStorage.removeItem("userId");
     navigate("/login");
@@ -86,9 +75,30 @@ const UserDashboard = () => {
     setEditedUser(user);
   };
 
-  const handleSaveProfile = () => {
-    setUser(editedUser);
-    setIsEditing(false);
+  const handleSaveProfile = async () => {
+  
+    const updatedUserData = {
+      userId: user.userId, 
+      firstName: editedUser.firstName,
+      lastName: editedUser.lastName,
+      email: editedUser.email,
+    };
+
+    try {
+      const response = await apiClient.put(
+        "/api/user",
+        updatedUserData,
+      );
+
+      if (response.status === 200) {
+        setUser(editedUser); 
+        setIsEditing(false); 
+        toast.success("Profile updated successfully!"); 
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast.error("Failed to update profile."); 
+    }
   };
 
   const handleInputChange = (e) => {
@@ -102,17 +112,10 @@ const UserDashboard = () => {
   // Function to mark task as completed
   const markAsCompleted = async (taskId) => {
     try {
-      const token = localStorage.getItem("authToken");
-      const response = await axios.put(
-        "http://localhost:5001/api/user/update/status",
-        { taskId, status: "COMPLETED" },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            accept: "*/*",
-          },
-        }
-      );
+      const response = await apiClient.put("/api/user/update/status", {
+        taskId,
+        status: "COMPLETED"
+      });      
       if (response.status === 200) {
         // Update the task list to reflect the change
         const updatedTasks = tasks.map((task) =>

@@ -1,5 +1,5 @@
 {
-  "hash": "d6affedecead69eb7dda",
+  "hash": "426f35be320c026d9bfb",
   "publicPath": "/build/",
   "outputPath": "C:\\Users\\HP\\Desktop\\VRVSecurity\\RBACx\\src\\main\\resources\\static\\build\\",
   "assetsByChunkName": {
@@ -11,7 +11,7 @@
     {
       "type": "asset",
       "name": "main.js",
-      "size": 4922168,
+      "size": 4924232,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,

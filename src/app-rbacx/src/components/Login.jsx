@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import * as styles from "./Login.module.css";
-import axios from "axios";
+import apiClient from "./APIs/ApiClient";
 import { HiEye, HiEyeOff } from "react-icons/hi";
 import { MdClose } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
@@ -33,11 +33,12 @@ const Login = () => {
         };
 
         try {
-            const response = await axios.post("http://localhost:5001/api/auth/authenticate", trimmedData);
+            const response = await apiClient.post("/api/auth/authenticate", trimmedData);
             console.log(response);
-            const { token, userRole, userId } = response.data.data;
+            const { token, refreshToken, userRole, userId } = response.data.data;
             if (token && userRole) {
                 localStorage.setItem("authToken", token);
+                localStorage.setItem("refreshToken", refreshToken);
                 localStorage.setItem("userRole", userRole);
                 localStorage.setItem("userId", userId);
                 if (userRole === "ROLE_USER") {

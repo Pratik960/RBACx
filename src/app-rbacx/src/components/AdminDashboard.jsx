@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import apiClient from "./APIs/ApiClient";
 import toast from "react-hot-toast";
 import * as styles from "./AdminDashboard.module.css";
 
@@ -26,8 +26,8 @@ const AdminDashboard = () => {
 
   const fetchUsers = async (page) => {
     try {
-      const response = await axios.get(
-        `http://localhost:5001/api/user/allUsers`,
+      const response = await apiClient.get(
+        `/api/user/allUsers`,
         {
           params: {
             page,
@@ -37,9 +37,6 @@ const AdminDashboard = () => {
             status: "ACTIVE",
             role: "ROLE_USER",
             pageable: true,
-          },
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
         }
       );
@@ -52,8 +49,8 @@ const AdminDashboard = () => {
 
   const fetchEmployees = async (page) => {
     try {
-      const response = await axios.get(
-        `http://localhost:5001/api/user/allUsers`,
+      const response = await apiClient.get(
+        `/api/user/allUsers`,
         {
           params: {
             page,
@@ -63,9 +60,6 @@ const AdminDashboard = () => {
             status: "ACTIVE",
             role: "ROLE_EMP",
             pageable: true,
-          },
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
         }
       );
@@ -79,14 +73,9 @@ const AdminDashboard = () => {
   // Handle delete user
   const handleDeleteUser = async (userId) => {
     try {
-      const response = await axios.put(
-        `http://localhost:5001/api/admin/deleteAccount/${userId}`,
+      const response = await apiClient.put(
+        `/api/admin/deleteAccount/${userId}`,
         {},
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
-        }
       );
       setUsers(users.filter((user) => user.userId !== userId));
       setEmployees(employees.filter((emp) => emp.userId != userId));
@@ -115,16 +104,11 @@ const AdminDashboard = () => {
     }
 
     try {
-      const response = await axios.post(
-        `http://localhost:5001/api/admin/add/task`,
+      const response = await apiClient.post(
+        `/api/admin/add/task`,
         {
           title: taskTitle,
           description: taskDescription,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
         }
       );
       toast.success("Task created successfully");
@@ -138,7 +122,9 @@ const AdminDashboard = () => {
   // Handle logout
   const handleLogout = () => {
     localStorage.removeItem("authToken");
+    localStorage.removeItem("refreshToken");
     localStorage.removeItem("userRole");
+    localStorage.removeItem("userId");
     navigate("/login");
   };
 

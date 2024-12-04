@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,6 +44,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     private final Set<String> skipUrls = new HashSet<>(List.of(
             "/api/auth/activate-account/**",
             "/api/auth/authenticate",
+            "/api/auth/refreshToken",
             "/api/auth/signup"
     ));
 
@@ -85,7 +87,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             chain.doFilter(request, response);
 
         } catch (ExpiredJwtException | MalformedJwtException | SignatureException | UnauthorizedException |
-                 UsernameNotFoundException e) {
+                 UsernameNotFoundException | BadCredentialsException e) {
             logger.error("UnauthorizedException ", e);
             handleException(e, response, HttpStatus.UNAUTHORIZED);
 //            response.sendRedirect(appProperties.getReactUrl().concat(appProperties.getReactLoginPath()));

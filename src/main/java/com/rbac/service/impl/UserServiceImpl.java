@@ -30,19 +30,18 @@ import org.springframework.stereotype.Service;
 import com.rbac.config.security.web.AdminUserDetailsService;
 import com.rbac.config.security.web.JwtUtil;
 import com.rbac.model.dao.UsersDao;
-import com.rbac.model.dao.specification.TaskSpecs;
 import com.rbac.model.dao.specification.UserSpecs;
 import com.rbac.model.dto.auth.LoginResponse;
-import com.rbac.model.dto.task.TaskResponse;
 import com.rbac.model.dto.user.UserAuthenticateRequest;
 import com.rbac.model.dto.user.UserListRequest;
 import com.rbac.model.dto.user.UserRequest;
 import com.rbac.model.dto.user.UserResponse;
 import com.rbac.model.dto.user.UserStatusUpdateRequest;
 import com.rbac.model.dto.user.UserUpdateRequest;
-import com.rbac.model.entity.Task;
+import com.rbac.model.entity.RefreshToken;
 import com.rbac.model.entity.Users;
 import com.rbac.model.entity.Users.UserStatus;
+import com.rbac.service.RefreshTokenService;
 import com.rbac.service.UserService;
 import com.rbac.util.AppProperties;
 import com.rbac.util.AppUtil;
@@ -79,13 +78,15 @@ public class UserServiceImpl implements UserService {
 
     private final UsersUtil usersUtil;
 
+    private final RefreshTokenService refreshTokenService;
+
     @Value("${app.email}")
     private String senderEmail;
 
     @Autowired
     public UserServiceImpl(UsersDao userDao, BCryptPasswordEncoder passwordEncoder,
             AdminUserDetailsService adminUserDetailsService, JwtUtil jwtUtil, StringEncryptor encryptor,
-            AppProperties appProperties, JavaMailSender emailSender, UsersUtil usersUtil) {
+            AppProperties appProperties, JavaMailSender emailSender, UsersUtil usersUtil, RefreshTokenService refreshTokenService) {
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
         this.adminUserDetailsService = adminUserDetailsService;
@@ -94,6 +95,7 @@ public class UserServiceImpl implements UserService {
         this.appProperties = appProperties;
         this.emailSender = emailSender;
         this.usersUtil = usersUtil;
+        this.refreshTokenService = refreshTokenService;
     }
 
     public static void main(String[] args) {
@@ -237,8 +239,10 @@ public class UserServiceImpl implements UserService {
 
             authToken = jwtUtil.createToken(claims, String.valueOf(users.getId()), "rbac", username);
 
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(username);
             LoginResponse response = new LoginResponse();
             response.setToken(authToken);
+            response.setRefreshToken(refreshToken.getRefreshToken());
             response.setUserRole(users.getAuthorities().name());
             response.setUserId(users.getId());
             return new SuccessResponse<>(response, HttpStatus.OK.value());

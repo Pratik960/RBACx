@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import * as styles from "./Register.module.css";
-import axios from "axios";
+import apiClient from "./APIs/ApiClient";
 import toast from "react-hot-toast";
 import registrationImage from "./images/RBACxLogo.png";
 import { useNavigate } from "react-router-dom";
@@ -75,10 +75,9 @@ const Register = () => {
     setIsSubmitting(true);
 
     try {
-      const apiUrl = "http://localhost:5001";
 
-      const response = await axios.post(
-        `${apiUrl}/api/auth/signup`,
+      const response = await apiClient.post(
+        `/api/auth/signup`,
         trimmedData
       );
 

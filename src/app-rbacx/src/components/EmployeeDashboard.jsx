@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import apiClient from "./APIs/ApiClient";
 import * as styles from "./EmployeeDashboard.module.css";
 
 const EmployeeDashboard = () => {
@@ -30,9 +30,8 @@ const EmployeeDashboard = () => {
   // Fetch tasks based on status and pagination
   const fetchTasks = async (status, setState, setHasMore, setTotalPages, page) => {
     try {
-      const token = localStorage.getItem("authToken");
-      const response = await axios.get(
-        "http://localhost:5001/api/user/allTask",
+      const response = await apiClient.get(
+        "/api/user/allTask",
         {
           params: {
             page: page,
@@ -45,11 +44,7 @@ const EmployeeDashboard = () => {
             startDate: "",
             endDate: "",
             pageable: true,
-          },
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "*/*",
-          },
+          }
         }
       );
 
@@ -78,9 +73,8 @@ const EmployeeDashboard = () => {
 
     try {
       setLoadingUsers(true);
-      const token = localStorage.getItem("authToken");
-      const response = await axios.get(
-        `http://localhost:5001/api/user/allUsers`,
+      const response = await apiClient.get(
+        `/api/user/allUsers`,
         {
           params: {
             page: userPage,
@@ -93,11 +87,7 @@ const EmployeeDashboard = () => {
             startDate: "",
             endDate: "",
             pageable: true,
-          },
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "*/*",
-          },
+          }
         }
       );
 
@@ -123,7 +113,9 @@ const EmployeeDashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
+    localStorage.removeItem("refreshToken");
     localStorage.removeItem("userRole");
+    localStorage.removeItem("userId");
     navigate("/login");
   };
 
@@ -139,8 +131,8 @@ const EmployeeDashboard = () => {
         return;
       }
 
-      const response = await axios.put(
-        "http://localhost:5001/api/emp",
+      const response = await apiClient.put(
+        "/api/emp",
         { taskId, userId: user.userId },
         {
           headers: {

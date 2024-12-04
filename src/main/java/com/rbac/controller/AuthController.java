@@ -16,9 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.rbac.config.ratelimiter.RateLimiterFallback;
 import com.rbac.model.dto.auth.LoginResponse;
+import com.rbac.model.dto.auth.RefreshTokenRequest;
 import com.rbac.model.dto.user.UserAuthenticateRequest;
 import com.rbac.model.dto.user.UserRequest;
 import com.rbac.model.dto.user.UserResponse;
+import com.rbac.model.entity.RefreshToken;
+import com.rbac.service.RefreshTokenService;
 import com.rbac.service.UserService;
 import com.rbac.util.AppUtil;
 import com.rbac.util.http.exceptions.CustomException;
@@ -46,10 +49,13 @@ public class AuthController {
 
     private final RateLimiterFallback fallback;
 
+    private final RefreshTokenService refreshTokenService;
+
     @Autowired
-    public AuthController(UserService userService, RateLimiterFallback fallback){
+    public AuthController(UserService userService, RateLimiterFallback fallback, RefreshTokenService refreshTokenService){
         this.userService = userService;
         this.fallback = fallback;
+        this.refreshTokenService = refreshTokenService;
     }
     
     @Operation(
@@ -100,6 +106,12 @@ public class AuthController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PostMapping("/refreshToken")
+    public ResponseEntity<SuccessResponse<LoginResponse>> refreshToken(@RequestBody RefreshTokenRequest tokenRequest){
+        SuccessResponse<LoginResponse> response = refreshTokenService.refreshToken(tokenRequest);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+ 
     public ResponseEntity<String> rateLimitFallback(Exception ex) {
         return fallback.rateLimitFallback(ex);
     }

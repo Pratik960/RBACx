@@ -5,6 +5,56 @@ RBACx is a secure Role-Based Access Control (RBAC) system built with React, Spri
 This project is aimed at demonstrating the principles of Authentication, Authorization, and Role-Based Access Control (RBAC) by allowing users to register, log in, and access resources based on their assigned roles.
 
 
+
+## Security Features
+
+There are several security features that I have added to secure this **RBACx** system.
+
+### 1. Spring Security Integration
+- In this system, **Spring Security** is used to handle all authentication and authorization processes.
+- It takes care of essential security concerns in the backend, including user login, password validation, and securing API endpoints.
+
+### 2. Custom Authentication Filter
+- A **custom authentication filter** was developed to handle authentication for every incoming request to the backend.
+- This filter intercepts requests, extracts the **JWT token** from the request header, and validates it to ensure the request is from an authorized user.
+
+### 3. Custom JWT Token Implementation
+- **Custom JWT tokens** were created for secure user authentication and authorization.
+- These tokens are **signed and encrypted**, ensuring that only authorized users can interact with the system.
+- After a successful login, both a JWT token and a refresh token are issued. They are used for authenticating subsequent requests and generating a new JWT token when the current one expires.
+
+### 4. Refresh Token System
+- **Refresh tokens** were implemented to extend user sessions and reduce the need for frequent re-authentication.
+- Each time a user logs in, both an **access token** (JWT) and a **refresh token** are issued.
+- When the access token expires, the refresh token can be used to generate a new access token, allowing users to stay logged in without having to re-enter their credentials.
+- The refresh token is securely stored and transmitted to prevent unauthorized access.
+
+### 5. Role-Based Access Control (RBAC)
+- The application enforces **role-based access control (RBAC)** for different types of users.
+- Users are assigned roles like **Admin**, **User**, **Employee**, and each role has its own access rights to various resources.
+- **Spring Security** is used to manage authorization, ensuring that only users with the correct role can access certain endpoints and actions.
+
+### 6. Rate Limiting
+- To protect against **Distributed Denial of Service (DDoS)** attacks, the app implements **rate limiting**.
+- Rate limiting restricts the number of requests a user can make to any given API endpoint within a set amount of time.
+- This helps prevent the backend from being overwhelmed by too many requests and ensures that the system remains available and responsive.
+
+### 7. Frontend Protected Routes
+- Some routes in the frontend are **protected** and require the user to be authenticated before accessing them, as well as having specific authorization (i.e., roles).
+- If the user is not logged in, or their session has expired, they are automatically redirected to the login page.
+- Protected routes rely on the **role of current user** stored securely in the frontend (e.g., in **localStorage**) to verify the user’s identity before granting access.
+
+### 8. Email Verification on User Registration
+- **Email verification** is implemented as part of the user registration process to ensure the validity of the user's email address.
+- After a user registers, a verification email containing a token is sent to the provided email address.
+- The user must click on the verification link to confirm their email address before gaining access to certain features of the application.
+- This step prevents fake or invalid email addresses from being used and adds an extra layer of security to the user registration process.
+
+---
+
+
+
+
 ## User Roles and Permissions
 
 | **Role**       | **Permissions**                                                                                                                                                                                                                                                                                                  |
@@ -28,13 +78,21 @@ Clone the repository to your local machine:
 
  2.1 Create a MySQL database:
 ```bash
-CREATE DATABASE rbacx;
+CREATE DATABASE rbac;
 ```
-2.2 Set up the database connection in the application.properties of the Spring Boot backend (replace your_username and your_password with your username and password):
+2.2 Set up the database connection and email sender service configuration in the application-local.properties of the Spring Boot backend:
 ```bash
+app.email=youremail@gmail.com
+
+spring.mail.username=youremail@gmail.com
+spring.mail.password=your_email_app_password
+
 spring.datasource.username=your_username
 spring.datasource.password=your_password
-
+```
+2.3 Set the active profile as local in application.properties file
+```bash
+spring.profiles.active=local
 ```
 
 ### 3. Backend Setup (Spring Boot)

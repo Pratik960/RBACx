@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.rbac.config.ratelimiter.RateLimiterFallback;
 import com.rbac.model.dto.task.TaskRequest;
 import com.rbac.model.dto.task.TaskResponse;
 import com.rbac.model.dto.user.UserStatusUpdateRequest;
@@ -19,6 +20,7 @@ import com.rbac.service.TaskService;
 import com.rbac.service.UserService;
 import com.rbac.util.http.response.SuccessResponse;
 
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -36,11 +38,13 @@ public class AdminController {
 
     private final UserService userService;
     private final TaskService taskService;
+    private final RateLimiterFallback fallback;
 
     @Autowired
-    public AdminController(UserService userService, TaskService taskService) {
+    public AdminController(UserService userService, TaskService taskService, RateLimiterFallback fallback) {
         this.userService = userService;
         this.taskService = taskService;
+        this.fallback = fallback;
     }
 
     // add task
@@ -59,6 +63,7 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "successful operation")
     })
     @PutMapping("/deleteAccount/{id}")
+    @RateLimiter(name = "highPriorityEndpoint", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<SuccessResponse<String>> deleteUserProfile(@PathVariable Integer id) {
         SuccessResponse<String> response = userService.deleteUser(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -74,4 +79,7 @@ public class AdminController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    public ResponseEntity<String> rateLimitFallback(Exception ex) {
+        return fallback.rateLimitFallback(ex);
+    }
 }

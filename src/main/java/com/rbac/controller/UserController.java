@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -21,6 +22,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
+import com.rbac.config.ratelimiter.RateLimiterFallback;
 import com.rbac.model.dto.task.TaskListRequest;
 import com.rbac.model.dto.task.TaskResponse;
 import com.rbac.model.dto.task.TaskStatusUpdateRequest;
@@ -41,11 +43,13 @@ public class UserController {
 
         private final UserService userService;
         private final TaskService taskService;
+        private final RateLimiterFallback fallback;
 
         @Autowired
-        public UserController(UserService userService, TaskService taskService) {
+        public UserController(UserService userService, TaskService taskService, RateLimiterFallback fallback) {
                 this.userService = userService;
                 this.taskService = taskService;
+                this.fallback = fallback;
         }
 
         @Operation(summary = "Fetch one user based on given Id", description = "fetches one user based on provided Id")
@@ -96,6 +100,8 @@ public class UserController {
                         @ApiResponse(responseCode = "200", description = "successful operation")
         })
         @GetMapping("/allUsers")
+        @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_EMP')")
+        @RateLimiter(name = "default", fallbackMethod = "rateLimitFallback")
         public ResponseEntity<PageResponse<UserResponse>> getAllUsers(@Valid UserListRequest listRequest) {
                 PageResponse<UserResponse> response = userService.getAllUsers(listRequest);
                 return new ResponseEntity<>(response, HttpStatus.OK);
@@ -110,6 +116,10 @@ public class UserController {
                         @Valid @RequestBody TaskStatusUpdateRequest updateRequest) {
                 SuccessResponse<TaskResponse> response = taskService.updateTaskStatus(updateRequest);
                 return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        public ResponseEntity<String> rateLimitFallback(Exception ex) {
+                return fallback.rateLimitFallback(ex);
         }
 
 }

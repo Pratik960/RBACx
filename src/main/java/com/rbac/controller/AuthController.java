@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.rbac.config.ratelimiter.RateLimiterFallback;
 import com.rbac.model.dto.auth.LoginResponse;
 import com.rbac.model.dto.user.UserAuthenticateRequest;
 import com.rbac.model.dto.user.UserRequest;
@@ -32,6 +33,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+
 @Tag(name = "Auth", description = "Auth API")
 @RestController
 @Slf4j
@@ -41,9 +44,12 @@ public class AuthController {
 
     private final UserService userService;
 
+    private final RateLimiterFallback fallback;
+
     @Autowired
-    public AuthController(UserService userService){
+    public AuthController(UserService userService, RateLimiterFallback fallback){
         this.userService = userService;
+        this.fallback = fallback;
     }
     
     @Operation(
@@ -74,6 +80,7 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "successful operation")
     })
     @PostMapping("/signup")
+    @RateLimiter(name = "default", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<SuccessResponse<UserResponse>> signUpUser(@Valid @RequestBody UserRequest userRequest) {
         SuccessResponse<UserResponse> response = userService.createUser(userRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -87,9 +94,14 @@ public class AuthController {
         @ApiResponse(responseCode = "200", description = "successful operation")
     })
     @PostMapping("/authenticate")
+    @RateLimiter(name = "highPriorityEndpoint", fallbackMethod = "rateLimitFallback")
     public ResponseEntity<SuccessResponse<LoginResponse>> loginUser(@RequestBody UserAuthenticateRequest userRequest, HttpServletRequest request) {
         SuccessResponse<LoginResponse> response = userService.authenticateUser(userRequest, request);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    public ResponseEntity<String> rateLimitFallback(Exception ex) {
+        return fallback.rateLimitFallback(ex);
     }
 
 }

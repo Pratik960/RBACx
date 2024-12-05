@@ -13,7 +13,7 @@ https://rbac-deployment.onrender.com
 
 ## Note
 
-> This application is hosted on a **free server**, which may result in slightly slower initial loading times due to server cold starts or resource limitations. Please be patient while the website loads.
+> This application is hosted on a **free server**, which may result in slightly slower (2-3 minutes) initial loading times due to server cold starts or resource limitations. Please be patient while the website loads.
 
 
 

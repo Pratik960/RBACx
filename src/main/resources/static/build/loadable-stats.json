@@ -1,5 +1,5 @@
 {
-  "hash": "426f35be320c026d9bfb",
+  "hash": "8d11eea7be0373c46a66",
   "publicPath": "/build/",
   "outputPath": "C:\\Users\\HP\\Desktop\\VRVSecurity\\RBACx\\src\\main\\resources\\static\\build\\",
   "assetsByChunkName": {
@@ -11,7 +11,7 @@
     {
       "type": "asset",
       "name": "main.js",
-      "size": 4924232,
+      "size": 276990,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
@@ -26,7 +26,7 @@
       "auxiliaryChunkNames": [],
       "auxiliaryChunkIdHints": [],
       "chunks": [
-        "main"
+        792
       ],
       "auxiliaryChunks": []
     },
@@ -48,13 +48,13 @@
       "auxiliaryChunkIdHints": [],
       "chunks": [],
       "auxiliaryChunks": [
-        "main"
+        792
       ]
     },
     {
       "type": "asset",
       "name": "../../templates/index.html",
-      "size": 1431,
+      "size": 485,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
@@ -71,7 +71,7 @@
     "main": {
       "name": "main",
       "chunks": [
-        "main"
+        792
       ],
       "assets": [
         {
@@ -89,7 +89,7 @@
   "generator": "loadable-components",
   "chunks": [
     {
-      "id": "main",
+      "id": 792,
       "files": [
         "main.js"
       ]

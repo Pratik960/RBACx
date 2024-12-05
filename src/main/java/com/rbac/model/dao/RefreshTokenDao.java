@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.rbac.model.entity.RefreshToken;
 import com.rbac.model.entity.Users;
 
-public interface RefreshTokenDao extends JpaRepository<RefreshToken, String> {
+public interface RefreshTokenDao extends JpaRepository<RefreshToken, Integer> {
  
     Optional<RefreshToken> findByUser(Users users);
     

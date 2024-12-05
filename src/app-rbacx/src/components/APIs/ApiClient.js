@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: "http://localhost:5001",
+  baseURL: process.env.REACT_APP_API_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -37,7 +37,7 @@ apiClient.interceptors.response.use(
         // Request a new auth token using the refresh token
         const refreshToken = localStorage.getItem("refreshToken");
         const response = await axios.post(
-          "http://localhost:5001/api/auth/refreshToken",
+          "/api/auth/refreshToken",
           {
             refreshToken,
           }

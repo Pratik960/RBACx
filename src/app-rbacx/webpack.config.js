@@ -6,6 +6,7 @@ const BundleAnalyzerPlugin =
   require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const { DefinePlugin } = require("webpack");
 
 var config = {
   module: {},
@@ -99,6 +100,9 @@ const returnAll = (watchFile) => {
       }),
       new MiniCssExtractPlugin({
         filename: "styles.css",
+      }),
+      new DefinePlugin({
+        'process.env.REACT_APP_API_URL': JSON.stringify(process.env.API_URL),
       }),
     ],
   });

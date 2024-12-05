@@ -4,6 +4,17 @@ RBACx is a secure Role-Based Access Control (RBAC) system built with React, Spri
 
 This project is aimed at demonstrating the principles of Authentication, Authorization, and Role-Based Access Control (RBAC) by allowing users to register, log in, and access resources based on their assigned roles.
 
+## Deployment URL
+
+The application is deployed and can be accessed at the following URL:
+
+https://rbac-deployment.onrender.com
+
+
+## Note
+
+> This application is hosted on a **free server**, which may result in slightly slower initial loading times due to server cold starts or resource limitations. Please be patient while the website loads.
+
 
 
 ## Security Features

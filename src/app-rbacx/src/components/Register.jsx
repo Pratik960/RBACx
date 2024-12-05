@@ -98,7 +98,6 @@ const Register = () => {
         });
       }
     } catch (error) {
-      console.log(error);
       const errorMessages = error?.response?.data?.errors || [
         "Registration failed. Please try again.",
       ];

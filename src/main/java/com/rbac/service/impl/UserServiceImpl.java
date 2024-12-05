@@ -293,7 +293,7 @@ public class UserServiceImpl implements UserService {
                 userDao.save(users);
 
                 log.info("User's account is verified and activated");
-                return appProperties.getUrl().concat("/activation");
+                return appProperties.getUrl().concat("/app/activation");
             } else {
                 return "Link expired";
             }

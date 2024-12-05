@@ -13,8 +13,8 @@ const Login = () => {
     });
     
     const navigate = useNavigate();
-
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+    const [isLoading, setIsLoading] = useState(false); // Loading state for the button
 
     const handleTogglePasswordVisibility = () => {
         setIsPasswordVisible((prev) => !prev);
@@ -26,6 +26,8 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsLoading(true); // Set loading state to true when the form is submitted
+
         const trimmedData = {
             ...formData,
             username: formData.username.trim().toLowerCase(),
@@ -34,7 +36,6 @@ const Login = () => {
 
         try {
             const response = await apiClient.post("/api/auth/authenticate", trimmedData);
-            console.log(response);
             const { token, refreshToken, userRole, userId } = response.data.data;
             if (token && userRole) {
                 localStorage.setItem("authToken", token);
@@ -54,8 +55,10 @@ const Login = () => {
         } catch (error) {
             const errorMessages = error?.response?.data?.errors || ["Login failed. Please try again."];
             errorMessages.forEach((msg) => toast.error(msg));
+        } finally {
+            setIsLoading(false); // Reset loading state after the request completes
         }
-    }
+    };
 
     return (
         <div className={styles.loginContainer}>
@@ -67,15 +70,30 @@ const Login = () => {
                 <p className={styles.welcomeText}>WELCOME BACK</p>
                 <h1>Sign in</h1>
                 <form onSubmit={handleSubmit}>
-                    <InputField name="username" label="Username" value={formData.username} onChange={handleInputChange} />
+                    <InputField 
+                        name="username" 
+                        label="Username" 
+                        value={formData.username} 
+                        onChange={handleInputChange} 
+                    />
                     <div className={styles.passwordFieldWrapper}>
-                        <InputField name="password" type={isPasswordVisible ? "text" : "password"}  label="Password" value={formData.password} onChange={handleInputChange} />
+                        <InputField 
+                            name="password" 
+                            type={isPasswordVisible ? "text" : "password"}  
+                            label="Password" 
+                            value={formData.password} 
+                            onChange={handleInputChange} 
+                        />
                         <button type="button" onClick={handleTogglePasswordVisibility} className={styles.passwordToggleBtn}>
-                                {isPasswordVisible ? <HiEyeOff /> : <HiEye />}
+                            {isPasswordVisible ? <HiEyeOff /> : <HiEye />}
                         </button>
                     </div>
-                    <button type="submit" className={styles.btnRegister}>
-                        Sign in
+                    <button 
+                        type="submit" 
+                        className={styles.btnRegister} 
+                        disabled={isLoading} // Disable the button when loading
+                    >
+                        {isLoading ? "Logging in..." : "Sign in"} {/* Show loading text when logging in */}
                     </button>
                 </form>
                 <p className={styles.signupText}>Don't have an account? <a href="/signup">Sign Up</a></p>

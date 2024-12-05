@@ -1,8 +1,9 @@
-*{
+* {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
 }
+
 :root {
     --background-color: #3e3e3e;
     --dark-background: #0f0909;
@@ -163,7 +164,6 @@ body {
     cursor: pointer;
     color: inherit; 
 }
-
 
 @media (max-width: 768px) {
     .loginContainer {

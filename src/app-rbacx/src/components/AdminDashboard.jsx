@@ -26,20 +26,17 @@ const AdminDashboard = () => {
 
   const fetchUsers = async (page) => {
     try {
-      const response = await apiClient.get(
-        `/api/user/allUsers`,
-        {
-          params: {
-            page,
-            perPage: 5,
-            search: "",
-            sort: "ASC",
-            status: "ACTIVE",
-            role: "ROLE_USER",
-            pageable: true,
-          },
-        }
-      );
+      const response = await apiClient.get(`/api/user/allUsers`, {
+        params: {
+          page,
+          perPage: 5,
+          search: "",
+          sort: "ASC",
+          status: "ACTIVE",
+          role: "ROLE_USER",
+          pageable: true,
+        },
+      });
       setUsers(response.data.data || []);
       setTotalUsersPages(response.data.totalPage || 1);
     } catch (error) {
@@ -49,20 +46,17 @@ const AdminDashboard = () => {
 
   const fetchEmployees = async (page) => {
     try {
-      const response = await apiClient.get(
-        `/api/user/allUsers`,
-        {
-          params: {
-            page,
-            perPage: 5,
-            search: "",
-            sort: "ASC",
-            status: "ACTIVE",
-            role: "ROLE_EMP",
-            pageable: true,
-          },
-        }
-      );
+      const response = await apiClient.get(`/api/user/allUsers`, {
+        params: {
+          page,
+          perPage: 5,
+          search: "",
+          sort: "ASC",
+          status: "ACTIVE",
+          role: "ROLE_EMP",
+          pageable: true,
+        },
+      });
       setEmployees(response.data.data || []);
       setTotalEmployeesPages(response.data.totalPage || 1);
     } catch (error) {
@@ -75,7 +69,7 @@ const AdminDashboard = () => {
     try {
       const response = await apiClient.put(
         `/api/admin/deleteAccount/${userId}`,
-        {},
+        {}
       );
       setUsers(users.filter((user) => user.userId !== userId));
       setEmployees(employees.filter((emp) => emp.userId != userId));
@@ -104,13 +98,10 @@ const AdminDashboard = () => {
     }
 
     try {
-      const response = await apiClient.post(
-        `/api/admin/add/task`,
-        {
-          title: taskTitle,
-          description: taskDescription,
-        }
-      );
+      const response = await apiClient.post(`/api/admin/add/task`, {
+        title: taskTitle,
+        description: taskDescription,
+      });
       toast.success("Task created successfully");
       setTaskTitle("");
       setTaskDescription("");
@@ -213,6 +204,7 @@ const AdminDashboard = () => {
                 type="text"
                 value={taskTitle}
                 onChange={(e) => setTaskTitle(e.target.value)}
+                placeholder="Enter the task title"
               />
               {errors.title && <p className={styles.error}>{errors.title}</p>}
             </div>
@@ -223,6 +215,7 @@ const AdminDashboard = () => {
                 id="taskDescription"
                 value={taskDescription}
                 onChange={(e) => setTaskDescription(e.target.value)}
+                placeholder="Enter a brief description of the task"
               />
               {errors.description && (
                 <p className={styles.error}>{errors.description}</p>

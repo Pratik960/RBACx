@@ -9,6 +9,7 @@ import { Toaster } from "react-hot-toast";
 import { Routes, Route } from "react-router-dom";
 import EmployeeDashboard from "./components/EmployeeDashboard";
 import AdminDashboard from "./components/AdminDashboard";
+import ActivationPage from "./components/ActivationPage";
 
 function App() {
   const navigate = useNavigate();
@@ -96,6 +97,7 @@ function App() {
         />
         <Route path="*" element={<ErrorPage />} />
         <Route path="/app/error" element={<ErrorPage />} />
+        <Route path="/app/activation" element={<ActivationPage />} />
       </Routes>
     </div>
   );
